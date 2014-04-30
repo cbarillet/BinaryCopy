@@ -1,7 +1,7 @@
 ﻿<Window x:Class="BinaryCopy2.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="456.314" Width="525">
 	<Grid x:Name="LayoutRoot" Background="White">
 		<GroupBox Header="Destination" HorizontalAlignment="Left" Margin="10,138,0,0" VerticalAlignment="Top" Height="97" Width="480"/>
 		<GroupBox Header="Source" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="97" Width="480"/>
@@ -22,6 +22,7 @@
 			Height="30" Width="300" Margin="30,175,0,0"
 			HorizontalAlignment="Left" VerticalAlignment="Top" 
 			Background="Beige" />
-		<Button Content="Copy" Margin="200,258,187,28" Click="Copy_Click"/>
+		<Button x:Name="btCopy" Content="Copy" Margin="193,322,194,59" Click="Copy_Click"/>
+		<ProgressBar x:Name="pbProgress" HorizontalAlignment="Left" Height="23" Margin="30,269,0,0" VerticalAlignment="Top" Width="460" ValueChanged="pbProgress_ValueChanged"/>
 	</Grid>
 </Window>

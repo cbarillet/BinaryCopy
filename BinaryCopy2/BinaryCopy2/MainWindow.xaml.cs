@@ -23,6 +23,8 @@ namespace BinaryCopy2
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		protected Task CopyTask { get; set; }
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -68,20 +70,54 @@ namespace BinaryCopy2
 
 		private void Copy_Click(object sender, RoutedEventArgs e)
 		{
-
+			int sizeBuffer = 2048;
 			string filename = System.IO.Path.GetFileName(tbSourcePath.Text);
-			using(Stream source = File.OpenRead(tbSourcePath.Text))
-			{
-				using(Stream dest = File.Create(tbDestinationPath.Text + "\\" + filename))
+			string sourcePath = tbSourcePath.Text;
+			string destinationPath = tbDestinationPath.Text;
+			FileStream stream = File.OpenRead(sourcePath);
+			pbProgress.Minimum = 0;
+			pbProgress.Maximum = stream.Length / sizeBuffer;
+			pbProgress.Value = 0;
+			stream.Close();
+			this.CopyTask = new Task(() =>
 				{
-					byte[] buffer = new byte[2048];
-					int bytesRead;
-					while((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+					using (Stream source = File.OpenRead(sourcePath))
 					{
-						dest.Write(buffer, 0, bytesRead);
+						using (Stream dest = File.Create(destinationPath + "\\" + filename))
+						{
+							byte[] buffer = new byte[sizeBuffer];
+							int bytesRead;
+							while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+							{
+								dest.Write(buffer, 0, bytesRead);
+								pbProgress.Dispatcher.Invoke(
+										  System.Windows.Threading.DispatcherPriority.Normal,
+										  new Action(
+											delegate()
+											{
+												pbProgress.Value++;
+											}
+										));
+							}
+							btCopy.Dispatcher.Invoke(
+									System.Windows.Threading.DispatcherPriority.Normal,
+										  new Action(
+											delegate()
+											{
+												btCopy.Content = "End";
+												btCopy.IsEnabled = false;
+											}
+										));
+						}
 					}
-				}
-			}
+				});
+
+			this.CopyTask.Start();
+		}
+
+		private void pbProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+
 		}
 	}
 }
